@@ -1,0 +1,23 @@
+# HTTP и сетевые запросы
+requests
+urllib3
+certifi
+charset-normalizer
+idna
+
+# Тестирование
+pytest
+iniconfig
+pluggy
+
+# Переменные окружения
+python-dotenv
+
+# Allure — отчёты
+allure-pytest
+allure-python-commons
+
+# Вспомогательные утилиты
+colorama
+Pygments
+packaging

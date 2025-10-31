@@ -20,7 +20,6 @@ def get_auth_token():
         if not email or not password:
             raise ValueError(f"Данные для {role} не найдены в .env")
 
-        # отладочный вывод в консоль
         print(f"\n Запрос роли: {role}")
         print(f" Получен email: {repr(email)}")
         print(f" Получен пароль: {repr(password)}")
@@ -37,5 +36,19 @@ def get_auth_token():
             "token": data["token"],
             "role": data["role"]
         }
-
     return _login
+
+
+@pytest.fixture
+def client_id():
+    return int(os.getenv("CLIENT_ID", "1939"))
+
+
+@pytest.fixture
+def producer_id():
+    return int(os.getenv("PRODUCER_ID", "1599"))
+
+
+@pytest.fixture
+def contract_id():
+    return int(os.getenv("CONTRACT_ID", "17142"))

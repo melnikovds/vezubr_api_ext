@@ -1,9 +1,38 @@
 import random
+import requests
 from datetime import datetime
 
 
 class AddressPage:
     @staticmethod
+    def list_addresses(base_url: str, token: str, items_per_page: int = 100) -> list:
+        """Получить список всех адресов."""
+        headers = {"Authorization": token}
+        response = requests.post(
+            f"{base_url}/contractor-point/list-info",
+            headers=headers,
+            json={"itemsPerPage": items_per_page}
+        )
+        response.raise_for_status()
+        return response.json()["points"]
+
+    @staticmethod
+    def find_by_external_id(base_url: str, token: str, external_id: str) -> dict | None:
+        """Найти адрес по externalId."""
+        addresses = AddressPage.list_addresses(base_url, token, items_per_page=1000)
+        return next((a for a in addresses if a.get("externalId") == external_id), None)
+
+    @staticmethod
+    def create_or_update_address(base_url: str, token: str, payload: dict) -> int:
+        """Создать или обновить адрес. Возвращает id."""
+        headers = {"Authorization": token}
+        response = requests.post(
+            f"{base_url}/contractor-point/update",
+            headers=headers,
+            json=payload
+        )
+        response.raise_for_status()
+        return response.json().get("id", 0)
     def create_address_payload(**overrides) -> dict:
         # Генерация уникального externalId
         external_id = f"Izhevsk {random.randint(1, 100)}-{random.randint(1, 1000)}"

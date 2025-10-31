@@ -11,3 +11,6 @@ DOMAIN: Literal['dev', 'com', 'ru'] = cast(Literal['dev', 'com', 'ru'], _RAW_DOM
 BASE_URL = f"https://api.vezubr.{DOMAIN}/v1/api-ext"
 
 TIMEOUT = 10
+
+CLIENT_ID=1939
+PRODUCER_ID=1599

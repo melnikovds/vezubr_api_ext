@@ -1,6 +1,5 @@
 import random
 from typing import Optional, Dict, Any
-
 import requests
 
 
@@ -13,28 +12,34 @@ class CargoPlaceClient:
         self.headers = {"Authorization": token}
 
     def create_cargo_place(
-            self,
-            departure_external_id: str,
-            delivery_external_id: str,
-            cargo_type: Optional[str] = None,
-            weight_kg: Optional[int] = None,
-            volume_m3: Optional[int] = None,
-            comment: str = "Тестирование внешнего API"
+        self,
+        departure_external_id: str,
+        delivery_external_id: str,
+        title: str = None,
+        external_id: str = None,
+        cargo_type: Optional[str] = None,
+        weight_kg: Optional[int] = None,
+        volume_m3: Optional[int] = None,
+        comment: str = "Тестирование внешнего API"
     ) -> Dict[str, Any]:
-        # Увеличиваем счётчик и формируем title
-        CargoPlaceClient._counter += 1
-        title = f"API-{CargoPlaceClient._counter:05d}"  # например: API-00042
+        # Генерация title, если не задан
+        if title is None:
+            CargoPlaceClient._counter += 1
+            title = f"API-{CargoPlaceClient._counter:05d}"
 
-        # Рандомизация параметров
         actual_type = cargo_type or random.choice(self.CARGO_TYPES)
         weight_kg = weight_kg or random.randint(100, 1000)
         volume_m3 = volume_m3 or random.randint(1, 3)
 
+        volume = int(volume_m3 * 1_000_000)  # ← int, а не float
+        weight = int(weight_kg * 1000)
+
         payload = {
             "type": actual_type,
-            "title": title,  
-            "volume": volume_m3 * 1_000_000,  # м³ → см³
-            "weight": weight_kg * 1000,  # кг → г
+            "title": title,
+            "externalId": external_id,
+            "volume": volume,
+            "weight": weight,
             "reverseCargoType": "other",
             "reverseCargoReason": "",
             "comment": comment,
@@ -48,5 +53,15 @@ class CargoPlaceClient:
             headers=self.headers,
             json=payload
         )
-        response.raise_for_status()
-        return response.json()
+
+        # Отладочный вывод при ошибке
+        if response.status_code != 200:
+            print(f"\n❌ Ошибка создания грузоместа: {response.status_code}")
+            print(f"URL: {response.url}")
+            print(f"Тело запроса: {payload}")
+            print(f"Ответ сервера: {response.text}")
+            assert False, f"Сервер вернул ошибку: {response.status_code}"
+
+        result = response.json()
+        print(f"✅ Грузоместо создано: ID={result.get('id')}, title={result.get('title')}")
+        return result

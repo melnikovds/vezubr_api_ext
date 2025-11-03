@@ -3,7 +3,7 @@ import string
 
 
 class TractorPage:
-    """Класс для генерации данных для создания трактора."""
+    """Класс для генерации данных для создания тягача."""
 
     @staticmethod
     def generate_random_plate_number(prefix: str = "TRACTOR") -> str:
@@ -13,7 +13,7 @@ class TractorPage:
 
     @staticmethod
     def generate_random_mark_and_model() -> str:
-        """Генерирует случайную марку трактора в стиле Warhammer 40k."""
+        """Генерирует случайную марку тягача"""
         models = [
             "Malcador Prime",
             "Banehammer Heavy Tractor",
@@ -31,7 +31,7 @@ class TractorPage:
     @classmethod
     def create_tractor_payload(cls, **overrides) -> dict:
         """
-        Генерирует минимально необходимый payload для создания трактора.
+        Генерирует минимально необходимый payload для создания тягача.
         Все необязательные поля (vin, category и т.д.) опущены — API использует значения по умолчанию.
         """
         payload = {

@@ -1,7 +1,6 @@
 import allure
 import pytest
 import requests
-
 from config.settings import BASE_URL
 from pages.vehicle_page import VehiclePage
 

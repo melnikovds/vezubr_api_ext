@@ -1,10 +1,8 @@
 import os
 from pathlib import Path
-
 import pytest
 import requests
 from dotenv import load_dotenv
-
 from config.settings import BASE_URL, TIMEOUT
 
 dotenv_path = Path(__file__).parent / ".env"

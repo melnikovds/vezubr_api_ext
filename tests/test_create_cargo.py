@@ -1,7 +1,6 @@
 import allure
 import pytest
 import json
-
 from pages.create_cargo_page import CargoPlaceClient
 from config.settings import BASE_URL
 

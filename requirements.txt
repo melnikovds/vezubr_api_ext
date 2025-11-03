@@ -21,3 +21,4 @@ allure-python-commons
 colorama
 Pygments
 packaging
+faker

@@ -6,7 +6,7 @@ import pytest
 @allure.feature("Авторизация")
 @allure.description("Проверка успешной авторизации: получение токена и роли.")
 @pytest.mark.parametrize("role", ["lkz", "lke", "lkp"])
-def test_get_access_token_lkz(role, get_auth_token):
+def test_get_access_token(role, get_auth_token):
     with allure.step(f"Авторизация под ролью '{role}'"):
         auth_data = get_auth_token(role)
         token_str = auth_data["token"]

@@ -1,6 +1,5 @@
 import random
 from typing import Optional, Dict, Any
-
 import requests
 
 

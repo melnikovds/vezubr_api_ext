@@ -8,7 +8,7 @@ class TaskCreate:
     Класс для работы с эндпоинтами, связанными с Заданиями.
     Содержит методы для генерации данных и отправки запросов.
     """
-    fake = Faker()
+    fake = Faker('ru_RU')
 
     @staticmethod
     def generate_product_name():
@@ -47,11 +47,31 @@ class TaskCreate:
         )
 
     @staticmethod
+    def generate_update_dates() -> tuple[str, str, str, str]:
+
+        now = datetime.now(timezone.utc)
+
+        def format_z(dt: datetime) -> str:
+            return dt.strftime("%Y-%m-%dT%H:%M:%S") + f".{int(dt.microsecond / 1000):03d}Z"
+
+        date_plus_1_day = now + timedelta(days=11)
+        date_plus_2_days = now + timedelta(days=12)
+        date_plus_3_days = now + timedelta(days=13)
+        date_plus_4_days = now + timedelta(days=14)
+
+        return (
+            format_z(date_plus_1_day),
+            format_z(date_plus_2_days),
+            format_z(date_plus_3_days),
+            format_z(date_plus_4_days)
+        )
+
+    @staticmethod
     def generate_type_package():
         package = [
             "box", "pallet", "container", "bag", "RP", "vehicleBody"
         ]
-        return random.choice(package)
+        return [random.choice(package)]
 
     @staticmethod
     def choice_ship_by():
@@ -59,6 +79,13 @@ class TaskCreate:
             "fm_logistic", "vezubr", "pochta"
         ]
         return random.choice(options)
+
+    @staticmethod
+    def generate_external_task_number():
+        while True:
+            word = TaskCreate.fake.word().lower()
+            if 6 <= len(word) <= 8 and word.isalpha():
+                return word
 
     @classmethod
     def create_task_payload(cls, **overrides):
@@ -91,14 +118,42 @@ class TaskCreate:
 
             "requiredSentAtFrom": overrides.get("requiredSentAtFrom") or date_1,
             "requiredSentAtTill": overrides.get("requiredSentAtTill") or date_2,
-            "requiredDeliveredAtTill": overrides.get("requiredDeliveredAtTill") or date_3,
-            "requiredDeliveredAtFrom": overrides.get("requiredDeliveredAtFrom") or date_4,
+            "requiredDeliveredAtFrom": overrides.get("requiredDeliveredAtTill") or date_3,
+            "requiredDeliveredAtTill": overrides.get("requiredDeliveredAtFrom") or date_4,
 
             "volume": overrides.get("volume", random.randint(1, 10) * 1_000_000),
             "weight": overrides.get("weight", random.randint(1, 10) * 1_000),
             "cost": overrides.get("cost", random.randint(10_000, 1_000_000_000)),
             "quantity": overrides.get("quantity", random.randint(1, 100))
         }
+        payload.update(overrides)
+        return payload
+
+    @classmethod
+    def update_task_payload(cls, **overrides):
+        date_1, date_2, date_3, date_4 = TaskCreate.generate_update_dates()
+
+        payload = {
+                "shipBy": overrides.get("shipBy") or cls.choice_ship_by(),
+                "number": overrides.get("number") or cls.generate_random_number(),
+                "externalTaskNumber": overrides.get("externalTaskNumber", cls.generate_external_task_number()),
+                "title": overrides.get("title") or cls.generate_product_name(),
+                # "shipper": overrides.get("shipper") or None,
+                # "consignee": overrides.get("consignee") or None,
+                "departurePoint": overrides.get("departurePoint", {"id": 17974}),
+                "arrivalPoint": overrides.get("arrivalPoint", {"id": 18528}),
+                # "cargoPlaces": [],
+                "volume": overrides.get("volume", random.randint(1, 10) * 1_000_000),
+                "weight": overrides.get("weight", random.randint(1, 10) * 1_000),
+                "cost": overrides.get("cost", random.randint(10_000, 1_000_000_000)),
+                "quantity": overrides.get("quantity", random.randint(1, 100)),
+                "types": overrides.get("types") or cls.generate_type_package(),
+                "requiredSentAtFrom": date_1,
+                "requiredSentAtTill": date_2,
+                "requiredDeliveredAtFrom": date_3,
+                "requiredDeliveredAtTill": date_4
+                # "isCargoPlacesEnabled": true
+            }
         payload.update(overrides)
         return payload
 

@@ -16,7 +16,7 @@ def test_get_task(role, get_auth_token):
     # запрос деталки
     with allure.step(f"Получение деталки Задания"):
         response = requests.get(
-            f"{BASE_URL}/v1/api-ext/shipment/tasks/b676f327-baff-4f5c-96d1-077a86f6dc55",
+            f"{BASE_URL}/shipment/tasks/b676f327-baff-4f5c-96d1-077a86f6dc55",
             headers=headers
         )
         assert response.status_code == 200, f"Ошибка получения деталки: {response.text}"
@@ -36,9 +36,9 @@ def test_get_task(role, get_auth_token):
         assert "consignee" in detail_data, "В ответе отсутствует объект 'consignee'"
 
         assert detail_data["status"] == "pick_pending"
-        assert detail_data["title"] == "булочки"
+        assert detail_data["title"] == "хлебобулочные изделия"
         assert detail_data["isCargoPlacesEnabled"] is True
-        assert detail_data["number"] == "сладкая булочка"
+        assert detail_data["number"] == "булочки"
         assert detail_data["shipBy"] == "fm_logistic"
         assert detail_data["volume"] == 5000000
         assert detail_data["weight"] == 300000
@@ -82,7 +82,7 @@ def test_get_task(role, get_auth_token):
 
             requests_list = detail_data["cargoDeliveryRequests"]
             assert isinstance(requests_list, list), "cargoDeliveryRequests должен быть списком"
-            assert len(requests_list) == 2, f"Ожидалось 2 заявки, получено: {len(requests_list)}"
+            assert len(requests_list) == 3, f"Ожидалось 3 заявки, получено: {len(requests_list)}"
 
             # Проверяем первую заявку
             req1 = requests_list[0]

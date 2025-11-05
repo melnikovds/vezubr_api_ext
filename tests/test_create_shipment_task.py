@@ -39,14 +39,12 @@ def test_create_task(role, get_auth_token):
     with allure.step(f"Создано Задание {task_id}"):
         pass
 
-    original_data = test_create_task
-    task_id = original_data["task_id"]
-    create_payload = original_data["payload"]
+    # create_payload = original_data["payload"]
 
     # Запрос деталки
     with allure.step(f"Получение деталки созданного Задания {task_id}"):
         response = requests.get(
-            f"{BASE_URL}/v1/api-ext/shipment/tasks/{task_id}",
+            f"{BASE_URL}/shipment/tasks/{task_id}",
             headers=headers
         )
         assert response.status_code == 200, f"Ошибка получения деталки: {response.text}"
@@ -74,22 +72,22 @@ def test_create_task(role, get_auth_token):
             assert isinstance(place["id"], (int, str)), f"cargoPlaces[{i}].id должно быть строкой или числом"
 
         assert "shipBy" in detail_data, "Поле shipBy отсутствует в деталке"
-        assert detail_data["shipBy"] == create_payload["shipBy"], \
-            f"Ожидалось shipBy={create_payload['shipBy']}, получено {detail_data['shipBy']}"
+        assert detail_data["shipBy"] == task_payload["shipBy"], \
+            f"Ожидалось shipBy={task_payload['shipBy']}, получено {detail_data['shipBy']}"
 
-        assert detail_data["title"] == create_payload["title"], "Несоответствие title"
-        assert detail_data["number"] == create_payload["number"], "Несоответствие number"
+        assert detail_data["title"] == task_payload["title"], "Несоответствие title"
+        assert detail_data["number"] == task_payload["number"], "Несоответствие number"
 
-        if "arrivalPoint" in create_payload and "arrivalPoint" in detail_data:
-            assert detail_data["arrivalPoint"]["id"] == create_payload["arrivalPoint"]["id"]
+        if "arrivalPoint" in task_payload and "arrivalPoint" in detail_data:
+            assert detail_data["arrivalPoint"]["id"] == task_payload["arrivalPoint"]["id"]
 
-        if "departurePoint" in create_payload and "departurePoint" in detail_data:
-            assert detail_data["departurePoint"]["id"] == create_payload["departurePoint"]["id"]
+        if "departurePoint" in task_payload and "departurePoint" in detail_data:
+            assert detail_data["departurePoint"]["id"] == task_payload["departurePoint"]["id"]
 
-        assert detail_data["volume"] == create_payload["volume"]
-        assert detail_data["weight"] == create_payload["weight"]
-        assert detail_data["quantity"] == create_payload["quantity"]
-        assert detail_data["cost"] == create_payload["cost"]
+        assert detail_data["volume"] == task_payload["volume"]
+        assert detail_data["weight"] == task_payload["weight"]
+        assert detail_data["quantity"] == task_payload["quantity"]
+        assert detail_data["cost"] == task_payload["cost"]
 
     with allure.step(f"Поля созданного Задания {task_id} проверены"):
         pass

@@ -34,16 +34,17 @@ class TrailerCreate:
             "markAndModel": overrides.get("markAndModel") or cls.name_trailer_brand_model(),
             "yearOfManufacture": overrides.get("yearOfManufacture") or random.randint(2000, 2020),
             "ownerType": overrides.get("ownerType", 1),
-            "category": overrides.get("category") or [9],
+            # "category": overrides.get("category") or [9],
+            "category": overrides.get("category") or 9,
             "bodyType": overrides.get("bodyType", 10),
 
-            "liftingCapacityInKg": str(overrides.get("liftingCapacityInKg") or 20000),
+            "liftingCapacityInKg": (overrides.get("liftingCapacityInKg") or 25000),
             "liftingCapacityMin": str(overrides.get("liftingCapacityMin", 100)),
-            "liftingCapacityMax": str(overrides.get("liftingCapacityMax", 25000)),
+            "liftingCapacityMax": str(overrides.get("liftingCapacityMax", 50000)),
 
             "isRearLoadingAvailable": overrides.get("isRearLoadingAvailable", True),
-            "isSideLoadingAvailable": None,
-            "isTopLoadingAvailable" : None,
+            "isSideLoadingAvailable": overrides.get("isSideLoadingAvailable", False),
+            "isTopLoadingAvailable" : overrides.get("isTopLoadingAvailable", False),
 
             "heightFromGroundInCm": overrides.get("heightFromGroundInCm") or 300,
             "platformHeight": overrides.get("platformHeight") or 150,

@@ -76,7 +76,7 @@ def test_get_tariff_list(role, get_auth_token):
             assert "itemsCount" in data, "поле itemsCount отсутствует в ответе"
             assert isinstance(data["itemsCount"], int), "itemsCount должно быть числом"
 
-            items_count = data[["itemsCount"]]
+            items_count = data["itemsCount"]
 
             with allure.step(f"всего неактивных тарифов найдено: {items_count}"):
                 pass

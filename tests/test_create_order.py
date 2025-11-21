@@ -3,9 +3,11 @@ import pytest
 import requests
 import json
 import uuid
+import random
 
 from pages.create_cargo_page import CargoPlaceClient
 from pages.create_order_page import TransportRequestClient
+from pages.address_page import AddressPage
 from config.settings import BASE_URL
 
 
@@ -18,7 +20,32 @@ def test_create_transport_request(role, get_auth_token, client_id, producer_id):
     token = get_auth_token(role)["token"]
     headers = {"Authorization": token}
 
-    # 2. Получим список адресов
+    # 2. СОЗДАЕМ НОВЫЕ АДРЕСА ДЛЯ ТЕСТА
+    # Генерируем уникальные externalId для теста
+    departure_ext = f"Izhevsk-TEST-{uuid.uuid4().hex[:8].upper()}"
+    delivery_ext = f"Izhevsk-TEST-{uuid.uuid4().hex[:8].upper()}"
+
+    with allure.step("Создание тестовых адресов"):
+        # ИСПРАВЛЕНИЕ: Используем класс напрямую, а не создаем экземпляр
+        # Создаем адрес отправки
+        departure_payload = AddressPage.create_address_payload(  # ← УБИРАЕМ address_client.
+            externalId=departure_ext,
+            title=f"Тестовый адрес отправки {departure_ext}",
+            addressString="г Ижевск, ул Дзержинского, д 61"
+        )
+        departure_id = AddressPage.create_or_update_address(BASE_URL, token, departure_payload)
+        print(f"✅ Создан адрес отправки: externalId={departure_ext}, id={departure_id}")
+
+        # Создаем адрес доставки
+        delivery_payload = AddressPage.create_address_payload(  # ← УБИРАЕМ address_client.
+            externalId=delivery_ext,
+            title=f"Тестовый адрес доставки {delivery_ext}",
+            addressString="г Ижевск, ул 9 Января, д 191"
+        )
+        delivery_id = AddressPage.create_or_update_address(BASE_URL, token, delivery_payload)
+        print(f"✅ Создан адрес доставки: externalId={delivery_ext}, id={delivery_id}")
+
+    # 3. Получаем созданные адреса для использования в заявке
     response = requests.post(
         f"{BASE_URL}/contractor-point/list-info",
         headers=headers,
@@ -27,15 +54,11 @@ def test_create_transport_request(role, get_auth_token, client_id, producer_id):
     response.raise_for_status()
     points = response.json()["points"]
 
-    # 3. Ищем два адреса
-    departure_ext = "Izhevsk 81-870"
-    delivery_ext = "Izhevsk 71-130"
-
     departure_addr = next((p for p in points if p.get("externalId") == departure_ext), None)
     delivery_addr = next((p for p in points if p.get("externalId") == delivery_ext), None)
 
-    assert departure_addr is not None, f"Не найден адрес отправки: {departure_ext}"
-    assert delivery_addr is not None, f"Не найден адрес доставки: {delivery_ext}"
+    assert departure_addr is not None, f"Не найден созданный адрес отправки: {departure_ext}"
+    assert delivery_addr is not None, f"Не найден созданный адрес доставки: {delivery_ext}"
 
     addresses = [departure_addr, delivery_addr]
 

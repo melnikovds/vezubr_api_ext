@@ -9,14 +9,13 @@ dotenv_path = Path(__file__).parent / ".env"
 if dotenv_path.exists():
     load_dotenv(dotenv_path=dotenv_path)
 
-# === КЭШ ДЛЯ ТОКЕНОВ НА ВСЮ СЕССИЮ ===
+# === КЭШ ДЛЯ ТОКЕНОВ ===
 _auth_cache = {}
 
 
 @pytest.fixture(scope="session")
 def get_auth_token():
     def _login(role: str):
-        # Возвращаем из кэша, если уже авторизовывались под этой ролью
         if role in _auth_cache:
             return _auth_cache[role]
 
@@ -37,28 +36,84 @@ def get_auth_token():
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
-        token_info = {
-            "token": data["token"],
-            "role": data["role"]
-        }
-        # Сохраняем в кэш
+        token_info = {"token": data["token"], "role": data["role"]}
         _auth_cache[role] = token_info
         return token_info
 
     return _login
 
 
+# === ROLE-AWARE CONFIGURATION ===
+_ROLE_MAP = {
+    "lke": {"client_id": 1939, "producer_id": 1599, "contract_id": 17142},
+    "lkz": {"client_id": 1598, "producer_id": 1939, "contract_id": 21017},
+    "lkp": {"client_id": 1937, "producer_id": 3478, "contract_id": 26134},
+}
+
+
+def _get_role_from_request(request):
+    # 1. Если тест параметризован по "role"
+    if "role" in request.fixturenames:
+        try:
+            return request.getfixturevalue("role")
+        except:
+            pass
+    # 2. Если параметризация через valid_addresses[indirect=True]
+    if hasattr(request, "param") and isinstance(request.param, str):
+        return request.param
+    # 3. Fallback
+    return "lke"
+
+
+# === ROLE-AWARE FIXTURES (ТОЛЬКО ОНИ!) ===
+@pytest.fixture
+def client_id(request):
+    role = _get_role_from_request(request)
+    res = _ROLE_MAP[role]["client_id"]
+    print(f"\n🔧 client_id: роль={role!r}, возвращаем {res}")
+    return res
+
 
 @pytest.fixture
-def client_id():
-    return int(os.getenv("CLIENT_ID", "1939"))
+def producer_id(request):
+    role = _get_role_from_request(request)
+    return _ROLE_MAP[role]["producer_id"]
 
 
 @pytest.fixture
-def producer_id():
-    return int(os.getenv("PRODUCER_ID", "1599"))
+def contract_id(request):
+    role = _get_role_from_request(request)
+    return _ROLE_MAP[role]["contract_id"]
 
 
-@pytest.fixture
-def contract_id():
-    return int(os.getenv("CONTRACT_ID", "17142"))
+# === VALID_ADDRESSES (работает с role и indirect) ===
+@pytest.fixture(scope="function")
+def valid_addresses(get_auth_token, role):
+    token = get_auth_token(role)["token"]
+    headers = {"Authorization": token}
+
+    resp = requests.post(
+        f"{BASE_URL}/contractor-point/list-info",
+        headers=headers,
+        json={"itemsPerPage": 200},
+        timeout=TIMEOUT
+    )
+    resp.raise_for_status()
+    points = resp.json().get("points", [])
+
+    valid = [
+        p for p in points
+        if p.get("externalId")
+        and p.get("id")
+        and p["externalId"] != "unknown"
+        and isinstance(p["externalId"], str)
+        and p["externalId"].strip()
+    ]
+    assert len(valid) >= 2, f"Для роли {role} найдено <2 валидных адресов"
+
+    return {
+        "role": role,
+        "token": token,
+        "departure": valid[0],
+        "delivery": valid[1]
+    }

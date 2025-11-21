@@ -4,7 +4,7 @@ import requests
 from datetime import datetime, timedelta
 
 
-class CargoPlaceListClient:
+class CargoPlaceCreateOrUpdateListClient:
     CARGO_TYPES = ["free", "pallet", "box", "bag"]
 
     def __init__(self, base_url: str, token: str):
@@ -15,14 +15,12 @@ class CargoPlaceListClient:
         }
 
     def _generate_random_dimensions(self) -> Dict[str, int]:
-        """Генерирует случайные, но валидные размеры и вес."""
-        length = random.randint(10, 200)  # см
+        length = random.randint(10, 200)
         width = random.randint(10, 150)
         height = random.randint(10, 150)
-        volume = length * width * height  # см³
-        weight = random.randint(500, 20000)  # граммы
+        volume = length * width * height
+        weight = random.randint(500, 20000)
         quantity = random.randint(1, 50)
-
         return {
             "length": length,
             "width": width,
@@ -32,9 +30,8 @@ class CargoPlaceListClient:
             "quantity": quantity
         }
 
-    def _generate_random_datetime_window(self, base_days_offset: int = 0) -> Dict[str, str]:
-        """Генерирует временные окна отправки/доставки."""
-        base = datetime.now() + timedelta(days=base_days_offset)
+    def _generate_random_datetime_window(self) -> Dict[str, str]:
+        base = datetime.now()
         start = base.replace(hour=9, minute=0, second=0, microsecond=0)
         end = base.replace(hour=18, minute=0, second=0, microsecond=0)
         return {
@@ -51,16 +48,13 @@ class CargoPlaceListClient:
             external_id: str,
             bar_code: str,
             invoice_number: str,
-            is_planned: bool = False,
-            producer_id: int = None,
-            contract_id: int = None,
-            client_id: int = None,
+            is_planned: bool = False
     ) -> Dict[str, Any]:
         dims = self._generate_random_dimensions()
         time_windows = self._generate_random_datetime_window()
 
-        cargo = {
-            "status": "waiting_for_sending",
+        return {
+            "status": "waiting_for_sending",  # не требует statusAddress
             "barCode": bar_code,
             "type": random.choice(self.CARGO_TYPES),
             "departureAddressExternalId": departure_external_id,
@@ -73,27 +67,17 @@ class CargoPlaceListClient:
             **time_windows,
             "wmsNumber": f"WMS-{external_id}",
             "invoiceDate": "2025-03-14",
+            # ИНН/КПП НЕ указываем — не обязательны и могут вызвать ошибку
         }
 
-        # Контекст — критично для валидации адресов
-        if producer_id is not None:
-            cargo["producerId"] = producer_id
-        if contract_id is not None:
-            cargo["contractId"] = contract_id
-        if client_id is not None:
-            cargo["clientId"] = client_id
-
-        return cargo
-
-    def create_cargo_places_list(self, cargo_places: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Отправляет POST-запрос на /create-list."""
-        url = f"{self.base_url}/cargo-place/create-list"
+    def create_or_update_cargo_places_list(self, cargo_places: List[Dict[str, Any]]) -> Dict[str, Any]:
+        url = f"{self.base_url}/cargo-place/create-or-update-list"
         payload = {"data": cargo_places}
 
         response = requests.post(url, headers=self.headers, json=payload)
 
         if response.status_code != 200:
-            print(f"\n❌ Ошибка создания списка грузомест: {response.status_code}")
+            print(f"\n❌ Ошибка create-or-update-list: {response.status_code}")
             print(f"URL: {url}")
             print(f"Тело запроса: {payload}")
             print(f"Ответ сервера: {response.text}")

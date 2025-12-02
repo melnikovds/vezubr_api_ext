@@ -104,10 +104,10 @@ def valid_addresses(get_auth_token, role):
     valid = [
         p for p in points
         if p.get("externalId")
-        and p.get("id")
-        and p["externalId"] != "unknown"
-        and isinstance(p["externalId"], str)
-        and p["externalId"].strip()
+           and p.get("id")
+           and p["externalId"] != "unknown"
+           and isinstance(p["externalId"], str)
+           and p["externalId"].strip()
     ]
     assert len(valid) >= 2, f"Для роли {role} найдено <2 валидных адресов"
 
@@ -117,3 +117,24 @@ def valid_addresses(get_auth_token, role):
         "departure": valid[0],
         "delivery": valid[1]
     }
+
+
+@pytest.fixture
+def lke_token(get_auth_token):
+    """Токен пользователя LKE (исполнитель)"""
+    token_info = get_auth_token("lke")
+    return token_info["token"]
+
+
+@pytest.fixture
+def lkz_token(get_auth_token):
+    """Токен пользователя LKZ (заказчик)"""
+    token_info = get_auth_token("lkz")
+    return token_info["token"]
+
+
+@pytest.fixture
+def lkp_token(get_auth_token):
+    """Токен пользователя LKP (подрядчик)"""
+    token_info = get_auth_token("lkp")
+    return token_info["token"]

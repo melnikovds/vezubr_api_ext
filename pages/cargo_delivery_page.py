@@ -243,3 +243,47 @@ class CargoDeliveryClient:
         result = response.json()
         print(f"✅ Заявка создана: ID={result.get('id')}, requestNr={result.get('requestNr')}")
         return result
+
+    def get_delivery_request_details(self, request_id):
+        """
+        Получение детальной информации по FTL заявке
+
+        Args:
+            request_id (str): ID заявки
+
+        Returns:
+            dict: Детальная информация о заявке
+        """
+        url = f"{self.base_url}/cargo-delivery-requests/{request_id}/details"
+
+        response = requests.get(
+            url=url,
+            headers=self.headers
+        )
+
+        if response.status_code != 200:
+            raise Exception(f"Ошибка получения деталей заявки {request_id}: {response.status_code} - {response.text}")
+
+        return response.json()
+
+    def take_delivery_request(self, request_id):
+        """
+        Принятие FTL заявки исполнителем
+
+        Args:
+            request_id (str): ID заявки
+
+        Returns:
+            dict: Результат принятия заявки
+        """
+        url = f"{self.base_url}/cargo-delivery-requests/{request_id}/take"
+
+        response = requests.get(
+            url=url,
+            headers=self.headers
+        )
+
+        if response.status_code != 200:
+            raise Exception(f"Ошибка принятия заявки {request_id}: {response.status_code} - {response.text}")
+
+        return response.json()

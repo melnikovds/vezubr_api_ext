@@ -106,7 +106,7 @@ class CargoDeliveryDraftClient:
                 ]
             }
 
-        print(f"📤 Создание {delivery_sub_type.upper()} заявки в черновик:")
+        print(f"   Создание {delivery_sub_type.upper()} заявки в черновик:")
         print(f"   clientIdentifier: {client_identifier}")
         print(f"   Тип: {delivery_sub_type}")
 

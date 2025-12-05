@@ -27,7 +27,7 @@ class TestCreateDraftDeliveryRequests:
         # Выбираем два разных адреса
         departure_id, delivery_id = random.sample(self.TEST_ADDRESSES, 2)
 
-        print(f"📌 Используемые адреса:")
+        print(f"   Используемые адреса:")
         print(f"   Отправление ID: {departure_id}")
         print(f"   Доставка ID: {delivery_id}")
 
@@ -56,7 +56,7 @@ class TestCreateDraftDeliveryRequests:
         with allure.step("LKZ создает грузоместа"):
             cargo_client = CargoPlaceClient(BASE_URL, lkz_token)
 
-            print(f"📦 Создаем грузоместа для LTL заявки:")
+            print(f" Создаем грузоместа для LTL заявки:")
 
             cargo_place_ids = []  # ID грузомест
 
@@ -81,7 +81,7 @@ class TestCreateDraftDeliveryRequests:
                     print(f"   ✅ ГМ {i}: ID={cargo['id']}")
 
                 except Exception as e:
-                    print(f"   ⚠️  Не удалось создать ГМ {i}: {e}")
+                    print(f"  Не удалось создать ГМ {i}: {e}")
                     if i == 1 and not cargo_place_ids:
                         pytest.skip(f"Не удалось создать грузоместо: {e}")
 
@@ -91,7 +91,7 @@ class TestCreateDraftDeliveryRequests:
 
             client_identifier = f"LTL-DRAFT-{uuid.uuid4().hex[:8].upper()}"
 
-            print(f"🔄 Создаем LTL заявку в черновик:")
+            print(f"   Создаем LTL заявку в черновик:")
             print(f"   clientIdentifier: {client_identifier}")
 
             try:
@@ -135,7 +135,7 @@ class TestCreateDraftDeliveryRequests:
                 details_nr = details.get("requestNr", "N/A")
                 details_subtype = details.get("deliverySubType", "unknown")
 
-                print(f"🔍 Проверка заявки LKZ:")
+                print(f"   Проверка заявки LKZ:")
                 print(f"   Номер заявки: {details_nr}")
                 print(f"   Статус в деталях: {details_status}")
                 print(f"   Тип заявки: {details_subtype}")
@@ -147,7 +147,7 @@ class TestCreateDraftDeliveryRequests:
                 print(f"✅ LKZ видит созданную LTL заявку в черновиках")
 
                 # Проверяем структуру как в примере
-                print(f"📋 Проверка структуры ответа:")
+                print(f"   Проверка структуры ответа:")
                 print(f"   - departurePoint в корне: {details.get('departurePoint')} (ожидаем null)")
                 print(f"   - arrivalPoint в корне: {details.get('arrivalPoint')} (ожидаем null)")
 
@@ -234,7 +234,7 @@ class TestCreateDraftDeliveryRequests:
 
             client_identifier = f"FTL-DRAFT-{uuid.uuid4().hex[:8].upper()}"
 
-            print(f"🔄 Создаем FTL заявку в черновик:")
+            print(f"   Создаем FTL заявку в черновик:")
             print(f"   clientIdentifier: {client_identifier}")
 
             result = draft_client.create_ftl_draft_request(
@@ -271,7 +271,7 @@ class TestCreateDraftDeliveryRequests:
                 details_status = details.get("status", "unknown")
                 details_nr = details.get("requestNr", "N/A")
 
-                print(f"🔍 Проверка FTL заявки LKZ:")
+                print(f"   Проверка FTL заявки LKZ:")
                 print(f"   Номер заявки: {details_nr}")
                 print(f"   Статус в деталях: {details_status}")
                 print(f"   Тип заявки: {details.get('deliverySubType')}")
@@ -282,7 +282,7 @@ class TestCreateDraftDeliveryRequests:
 
                 print(f"✅ LKZ видит созданную FTL заявку в черновиках")
             except Exception as e:
-                print(f"⚠️  LKZ не может получить детали FTL заявки: {e}")
+                print(f"   LKZ не может получить детали FTL заявки: {e}")
 
         # === 4. Allure отчет ===
         with allure.step("Детали FTL теста"):
@@ -318,7 +318,7 @@ class TestCreateDraftDeliveryRequests:
         with allure.step("Сравнение двух подходов"):
             departure_id, delivery_id = self.get_test_addresses()
 
-            print(f"🧪 Сравнение создания заявок:")
+            print(f"   Сравнение создания заявок:")
             print(f"   Адреса: {departure_id} → {delivery_id}")
 
             # 1. Создание в черновик

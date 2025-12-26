@@ -89,3 +89,79 @@ class TransportRequestClient:
             assert False, f"Ошибка создания рейса: {response.status_code}"
 
         return response.json()
+
+    def create_and_publish_transport_request(
+            self,
+            addresses: List[Dict[str, Any]],
+            cargo_place_specs: List[Dict[str, Any]],
+            client_id: int,
+            producer_id: int,
+            contract_id: int,
+            order_identifier: str,
+            inner_comment: str = "Тестовое создание рейса (с публикацией)"
+    ) -> Dict[str, Any]:
+        now = datetime.now()
+        start_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
+        start_time = "10:00"
+
+        # Формируем маршрут с position
+        route = []
+        for i, addr in enumerate(addresses):
+            route.append({
+                "id": addr["id"],
+                "externalId": addr.get("externalId", ""),
+                "latitude": addr.get("latitude"),
+                "longitude": addr.get("longitude"),
+                "addressString": addr["addressString"],
+                "cityName": addr.get("cityName") or "Ижевск",
+                "cityFiasId": addr.get("cityFiasId"),
+                "timeZoneId": addr.get("timezone") or "Europe/Samara",
+                "contacts": addr.get("contacts") or [""],
+                "phone": addr.get("phone") or "",
+                "email": addr.get("email") or "",
+                "title": addr.get("title") or "Адрес",
+                "attachedFiles": [],
+                "isLoadingWork": (i == 0),
+                "isUnloadingWork": (i == len(addresses) - 1),
+                "position": i + 1,
+                "loadingType": addr.get("loadingType", 1),
+                "statusFlowType": "fullFlow"
+            })
+
+        payload = {
+            "toStartAtDate": start_date,
+            "toStartAtTime": start_time,
+            "requiredProducers": [producer_id],
+            "client": client_id,
+            "orderIdentifier": order_identifier,
+            "innerComment": inner_comment,
+            "publicComment": "",
+            "publishingType": "rate",
+            "clientRate": 50000,
+            "parametersForProducers": [{
+                "producer": producer_id,
+                "tariff": 0,
+                "contract": contract_id
+            }],
+            "orderType": 1,
+            "vehicleType": 1,
+            "bodyTypes": [3, 4],
+            "addresses": route,
+            "cargoPlaces": cargo_place_specs
+        }
+
+        # Используем /create-and-publish вместо /create
+        response = requests.post(
+            f"{self.base_url}/order/transport-request/create-and-publish",
+            headers=self.headers,
+            json=payload
+        )
+
+        if response.status_code != 200:
+            print(f"\n❌ Ошибка создания и публикации рейса: {response.status_code}")
+            print(f"URL: {response.url}")
+            print(f"Ответ: {response.text}")
+            print(f"Запрос: {json.dumps(payload, ensure_ascii=False, indent=2)}")
+            response.raise_for_status()
+
+        return response.json()

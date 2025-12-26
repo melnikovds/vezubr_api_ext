@@ -71,13 +71,13 @@ def validate_russian_titles_in_response(response: requests.Response):
     error_messages = missing_title_errors + missing_cyrillic_errors
 
     if error_messages:
-        warning_msg = "⚠️ Найдены поля без переводя на русский язык:\n" + "\n".join(error_messages)
+        warning_msg = "⚠️ Найдены поля без перевода на русский язык:\n" + "\n".join(error_messages)
 
         # Вывод в консоль
         print(warning_msg)
 
         # Добавляем в Allure как шаг или прикрепление
-        with allure.step("Предупреждение: Отсутствует перевод для некоторых элементов"):
+        with allure.step("Отсутствует перевод для некоторых элементов"):
             allure.attach(
                 "\n".join(error_messages),
                 name="Элементы без кириллицы",

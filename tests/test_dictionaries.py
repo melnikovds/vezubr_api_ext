@@ -69,5 +69,5 @@ def test_get_dictionaries(role, get_auth_token):
         for key in required_keys:
             assert key in data, f"Отсутствует ключ: {key}"
 
-    # Проверка перевода → только предупреждения, не фейл
+    # проверка перевода
     validate_russian_titles_in_response(response)

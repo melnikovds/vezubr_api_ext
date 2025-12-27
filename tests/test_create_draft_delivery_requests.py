@@ -13,7 +13,7 @@ from config.settings import BASE_URL
 class TestCreateDraftDeliveryRequests:
     """Тесты создания заявок в черновик для LTL и FTL"""
 
-    # Конкретные ID адресов из ваших тестов
+
     TEST_ADDRESSES = [27648, 27649, 27650]
 
     def get_test_addresses(self):

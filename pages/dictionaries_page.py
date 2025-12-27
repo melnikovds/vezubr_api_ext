@@ -9,8 +9,8 @@ def has_cyrillic(text: str) -> bool:
 # def validate_russian_titles_in_response(response: requests.Response):
 #     """
 #     Проверяет, что во всех объектах в массивах ответа:
-#     1. Есть поле 'title'
-#     2. Значение 'title' содержит кириллицу
+#     1. Есть поле title
+#     2. Значение title содержит кириллицу
 #     """
 #     json_data = response.json()
 #     missing_title_errors = []
@@ -67,16 +67,16 @@ def validate_russian_titles_in_response(response: requests.Response):
             if not has_cyrillic(title):
                 missing_cyrillic_errors.append(f"в объекте с id {item_id} в группе '{dict_name}' отсутствует русский язык")
 
-    # Собираем все проблемы
+    # собираем все проблемы
     error_messages = missing_title_errors + missing_cyrillic_errors
 
     if error_messages:
         warning_msg = "⚠️ Найдены поля без перевода на русский язык:\n" + "\n".join(error_messages)
 
-        # Вывод в консоль
+        # вывод в консоль
         print(warning_msg)
 
-        # Добавляем в Allure как шаг или прикрепление
+        # добавляем в Allure как шаг или прикрепление
         with allure.step("Отсутствует перевод для некоторых элементов"):
             allure.attach(
                 "\n".join(error_messages),

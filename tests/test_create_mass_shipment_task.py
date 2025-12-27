@@ -12,7 +12,7 @@ CLEAN_UP_AFTER_TEST = True  # если True - запускается блок у
 @allure.description("Массовое создание Заданий с рандомизированными данными")
 @pytest.mark.parametrize("role", ["lkz"])
 def test_create_list_tasks(role, get_auth_token):
-    count = 10 # количество Заданий для создания
+    count = 200 # количество Заданий для создания
 
     # Авторизация
     token = get_auth_token(role)["token"]
@@ -59,7 +59,7 @@ def test_create_list_tasks(role, get_auth_token):
         for i, item in enumerate(data):
             with allure.step(f"Проверка элемента {i + 1} из {count} в массиве 'data'"):
                 assert "id" in item, f"В элементе {i} отсутствует поле 'id'"
-                assert isinstance(item["id"], str), f"ID должно быть строкой, получено: {type(item['id']).__name__}"
+                assert isinstance(item["id"], str), f"id должно быть строкой, получено: {type(item['id']).__name__}"
                 assert is_valid_uuid(item["id"]), f"Некорректный UUID в id: {item['id']}"
 
                 assert "errors" in item, f"В элементе {i} отсутствует поле 'errors'"
@@ -68,6 +68,13 @@ def test_create_list_tasks(role, get_auth_token):
 
                 assert "status" in item, f"В элементе {i} отсутствует поле 'status'"
                 assert item["status"] == "ok", f"Ожидался статус 'ok', получен: {item['status']}"
+
+        # Сохраняем все id
+        for item in data:
+            assert "id" in item, "Отсутствует id в элементе"
+            assert item["status"] == "ok", f"Статус не 'ok': {item}"
+            assert len(item["errors"]) == 0, f"Есть ошибки: {item['errors']}"
+            created_id.append(item["id"])
 
     # Опциональное удаление
     if CLEAN_UP_AFTER_TEST and created_id:
@@ -92,8 +99,9 @@ def test_create_list_tasks(role, get_auth_token):
                         "id": task_id,
                         "error": str(e)
                     })
+                time.sleep(0.2)
 
-            # результаты удаления
+                # результаты удаления
             if not failed_deletions:
                 with allure.step("✅ Все созданные Задания успешно удалены"):
                     pass

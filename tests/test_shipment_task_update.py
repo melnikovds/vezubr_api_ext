@@ -3,6 +3,7 @@ import pytest
 import requests
 from config.settings import BASE_URL
 from pages.shipment_task_page import TaskCreate
+from pprint import pprint
 
 
 @allure.story("Smoke test")
@@ -30,6 +31,7 @@ def test_update_task(role, get_auth_token):
 
     # Обновляем Задание
     task_update = TaskCreate.update_task_payload()
+    pprint(task_update)
 
     with allure.step("Обновление Задания"):
         response = requests.post(
@@ -49,7 +51,9 @@ def test_update_task(role, get_auth_token):
         )
         assert response.status_code == 200, f"Ошибка получения деталки: {response.text}"
 
+    # Деталка Задания
     detail_data = response.json()
+    pprint(detail_data)
 
     with allure.step("Проверяем значения обновлённого Задания"):
         assert detail_data["shipBy"] == task_update["shipBy"]

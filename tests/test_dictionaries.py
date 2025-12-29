@@ -71,3 +71,9 @@ def test_get_dictionaries(role, get_auth_token):
 
     # проверка перевода
     validate_russian_titles_in_response(response)
+
+
+
+
+
+

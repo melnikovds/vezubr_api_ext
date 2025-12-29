@@ -71,3 +71,7 @@ def test_update_task(role, get_auth_token):
         assert detail_data["requiredSentAtTill"][:13] == task_update["requiredSentAtTill"][:13]
         assert detail_data["requiredDeliveredAtFrom"][:13] == task_update["requiredDeliveredAtFrom"][:13]
         assert detail_data["requiredDeliveredAtTill"] == task_update["requiredDeliveredAtTill"][:13]
+
+
+
+

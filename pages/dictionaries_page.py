@@ -86,3 +86,14 @@ def validate_russian_titles_in_response(response: requests.Response):
     else:
         with allure.step("✅ Все поля 'title' содержат русский язык"):
             pass
+
+
+
+
+
+
+
+
+
+
+

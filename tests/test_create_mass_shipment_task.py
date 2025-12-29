@@ -112,3 +112,8 @@ def test_create_list_tasks(role, get_auth_token):
                         name="Ошибки удаления",
                         attachment_type=allure.attachment_type.TEXT
                     )
+
+
+
+
+

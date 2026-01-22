@@ -55,6 +55,7 @@ def test_update_task(role, get_auth_token):
     detail_data = response.json()
     pprint(detail_data)
 
+    # правим UTC время на местное время Адреса
     expected_local_one = TaskCreate.to_local_hour(task_update["requiredSentAtFrom"], tz_offset_hours=3)
     expected_local_two = TaskCreate.to_local_hour(task_update["requiredSentAtTill"], tz_offset_hours=3)
     expected_local_three = TaskCreate.to_local_hour(task_update["requiredDeliveredAtFrom"], tz_offset_hours=3)

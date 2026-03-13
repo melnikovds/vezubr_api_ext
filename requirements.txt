@@ -22,3 +22,4 @@ colorama
 Pygments
 packaging
 faker
+beautifulsoup4 lxml

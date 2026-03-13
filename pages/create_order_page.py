@@ -19,14 +19,15 @@ class TransportRequestClient:
 
     def create_transport_request(
             self,
-            addresses: List[Dict[str, Any]],  # весь маршрут (5 точек)
-            cargo_place_specs: List[Dict[str, Any]],  # спецификации грузомест с позициями
+            addresses: List[Dict[str, Any]],
+            cargo_place_specs: List[Dict[str, Any]],
             client_id: int,
             producer_id: int,
             contract_id: int,
             order_identifier: str,
             inner_comment: str = "Тестовое создание рейса"
     ) -> Dict[str, Any]:
+        """Создать транспортный рейс."""
         now = datetime.now()
         start_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
         start_time = "10:00"
@@ -48,9 +49,9 @@ class TransportRequestClient:
                 "email": addr.get("email") or "",
                 "title": addr.get("title") or "Адрес",
                 "attachedFiles": [],
-                "isLoadingWork": (i == 0),  # первая — загрузка
-                "isUnloadingWork": (i == len(addresses) - 1),  # последняя — выгрузка
-                "position": i + 1,  # ← обязательно!
+                "isLoadingWork": (i == 0),
+                "isUnloadingWork": (i == len(addresses) - 1),
+                "position": i + 1,
                 "loadingType": addr.get("loadingType", 1),
                 "statusFlowType": "fullFlow"
             })
@@ -82,11 +83,17 @@ class TransportRequestClient:
             headers=self.headers,
             json=payload
         )
+
         if response.status_code != 200:
-            print(f"\n❌ Ошибка: {response.status_code}")
-            print(f"Ответ: {response.text}")
-            print(f"Тело запроса: {json.dumps(payload, ensure_ascii=False, indent=2)}")
-            assert False, f"Ошибка создания рейса: {response.status_code}"
+            error_msg = f"Ошибка создания рейса: {response.status_code}"
+            try:
+                error_data = response.json()
+                if "errors" in error_data:
+                    error_msg += f"\nОшибки: {error_data['errors']}"
+            except:
+                error_msg += f"\nОтвет: {response.text[:200]}"
+
+            raise AssertionError(error_msg)
 
         return response.json()
 

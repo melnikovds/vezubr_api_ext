@@ -12,16 +12,16 @@ class CargoPlaceClient:
         self.headers = {"Authorization": token}
 
     def create_cargo_place(
-        self,
-        departure_external_id: str,
-        delivery_external_id: str,
-        title: str = None,
-        external_id: str = None,
-        cargo_type: Optional[str] = None,
-        weight_kg: Optional[int] = None,
-        volume_m3: Optional[int] = None,
-        invoice_number: str = None,
-        comment: str = "Тестирование внешнего API"
+            self,
+            departure_external_id: str,
+            delivery_external_id: str,
+            title: str = None,
+            external_id: str = None,
+            cargo_type: Optional[str] = None,
+            weight_kg: Optional[int] = None,
+            volume_m3: Optional[int] = None,
+            invoice_number: str = None,
+            comment: str = "Тестирование внешнего API"
     ) -> Dict[str, Any]:
         # Генерация title, если не задан
         if title is None:
@@ -50,23 +50,24 @@ class CargoPlaceClient:
             "invoiceNumber": invoice_number
         }
 
-        # ИСПОЛЬЗУЕМ ТОТ ЖЕ ЭНДПОИНТ ЧТО И В РАБОЧЕМ ТЕСТЕ
         response = requests.post(
-            f"{self.base_url}/cargo-place/create-or-update",  # ← ИЗМЕНЕНИЕ ЗДЕСЬ
+            f"{self.base_url}/cargo-place/create-or-update",
             headers=self.headers,
             json=payload
         )
 
         if response.status_code != 200:
-            print(f"\n❌ Ошибка создания грузоместа: {response.status_code}")
-            print(f"URL: {response.url}")
-            print(f"Тело запроса: {payload}")
-            print(f"Ответ сервера: {response.text}")
-            assert False, f"Сервер вернул ошибку: {response.status_code}"
+            error_msg = f"Ошибка создания грузоместа: {response.status_code}"
+            try:
+                error_data = response.json()
+                if "message" in error_data:
+                    error_msg += f"\nСообщение: {error_data['message']}"
+            except:
+                error_msg += f"\nОтвет: {response.text[:200]}"
 
-        result = response.json()
-        print(f"✅ Грузоместо создано: ID={result.get('id')}, title={result.get('title')}")
-        return result
+            raise AssertionError(error_msg)
+
+        return response.json()
 
     def create_cargo_place_by_id(
             self,
@@ -95,7 +96,7 @@ class CargoPlaceClient:
             "reverseCargoType": "other",
             "reverseCargoReason": "",
             "comment": comment,
-            "status": "new",
+            # "status": "new", - было изменено в задаче vz-10443 (оставили для правок)
             # Используем внутренние ID, а не externalId
             "departureAddress": departure_address_id,
             "deliveryAddress": delivery_address_id,

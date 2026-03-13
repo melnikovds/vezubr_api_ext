@@ -49,7 +49,7 @@ class TestUpdateActiveDeliveryRequest:
         """
 
         print(f"\n{'=' * 60}")
-        print(f"🚀 ЗАПУСК ТЕСТА: Редактирование активной FTL заявки")
+        print(f" ЗАПУСК ТЕСТА: Редактирование активной FTL заявки")
         print(f"{'=' * 60}")
 
         # ==================== 1. LKZ СОЗДАЕТ ЗАЯВКУ ====================
@@ -214,7 +214,7 @@ class TestUpdateActiveDeliveryRequest:
             # Ожидаем что статус будет 'in_progress' или аналогичный
             # Если другой статус, все равно продолжаем тест
             if active_status != "in_progress":
-                print(f"⚠️  Внимание: статус не 'in_progress', а '{active_status}'. Продолжаем тест...")
+                print(f"  Внимание: статус не 'in_progress', а '{active_status}'. Продолжаем тест...")
 
         # ==================== 9. LKZ РЕДАКТИРУЕТ АКТИВНУЮ ЗАЯВКУ ====================
         with allure.step("9. LKZ редактирует активную заявку (изменяет комментарий)"):
@@ -247,10 +247,10 @@ class TestUpdateActiveDeliveryRequest:
             to_start_at_from = (datetime.now() + timedelta(days=1)).replace(microsecond=0).isoformat() + "Z"
             to_start_at_till = (datetime.now() + timedelta(days=1, hours=2)).replace(microsecond=0).isoformat() + "Z"
 
-            print(f"🔍 Пробуем изменить комментарий на: '{new_comment}'")
-            print(f"🔍 Время начала: {to_start_at_from}")
-            print(f"🔍 Время окончания: {to_start_at_till}")
-            print(f"🔍 Маршрут: {updated_route}")
+            print(f" Пробуем изменить комментарий на: '{new_comment}'")
+            print(f" Время начала: {to_start_at_from}")
+            print(f" Время окончания: {to_start_at_till}")
+            print(f" Маршрут: {updated_route}")
 
             # Выполняем обновление
             try:
@@ -287,7 +287,7 @@ class TestUpdateActiveDeliveryRequest:
                 details_lkz = lkz_client.get_delivery_request_details(request_id)
                 current_comment = details_lkz.get("comment")
 
-                print(f"🔍 Попытка {attempt + 1}: комментарий LKZ = '{current_comment}'")
+                print(f" Попытка {attempt + 1}: комментарий LKZ = '{current_comment}'")
 
                 if current_comment == new_comment:
                     updated_comment = current_comment
@@ -313,7 +313,7 @@ class TestUpdateActiveDeliveryRequest:
         with allure.step("11. Проверка обновленного комментария заявки у LKP"):
             details_lkp = lkp_client.get_delivery_request_details(request_id)
 
-            print(f"📋 Проверка данных LKP:")
+            print(f" Проверка данных LKP:")
             print(f"   Статус: {details_lkp.get('status')}")
             print(f"   Комментарий заявки: '{details_lkp.get('comment')}'")
 
@@ -359,13 +359,13 @@ class TestUpdateActiveDeliveryRequest:
                             status = entity.get('status')
                             print(f"   Статус рейса после завершения: {status}")
                             if status == 'completed':
-                                print(f"   🎉 Рейс успешно завершен!")
+                                print(f"   Рейс успешно завершен!")
                             else:
-                                print(f"   ⚠️ Рейс не завершился, статус: {status}")
+                                print(f"    Рейс не завершился, статус: {status}")
                             break
 
                 except Exception as e:
-                    print(f"⚠️ Не удалось завершить основным способом: {e}")
+                    print(f" Не удалось завершить основным способом: {e}")
                     print(f"   Пробуем простой способ (только completedAt)...")
 
                     # Fallback: простой способ

@@ -157,6 +157,16 @@ class TaskCreate:
         payload.update(overrides)
         return payload
 
+    @staticmethod
+    def to_local_hour(utc_time_str: str, tz_offset_hours: int = 3) -> str:
+        """
+        Конвертирует ISO-время (без Z) в локальное по смещению и возвращает строку до часа.
+        Пример: "2026-01-09T09:00:00" → "2026-01-09T12"
+        """
+        dt = datetime.fromisoformat(utc_time_str)
+        local_dt = dt + timedelta(hours=tz_offset_hours)
+        return local_dt.strftime("%Y-%m-%dT%H")
+
 
 
 

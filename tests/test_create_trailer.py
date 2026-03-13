@@ -33,9 +33,9 @@ def test_create_trailer(role, get_auth_token):
         assert created_trailer["status"] == "active"
         assert "id" in created_trailer
         assert created_trailer["liftingCapacityInKg"] == trailer_payload["liftingCapacityInKg"]
-        assert created_trailer["topLoadingAvailable"] == trailer_payload["isTopLoadingAvailable"]
-        assert created_trailer["sideLoadingAvailable"] == trailer_payload["isSideLoadingAvailable"]
-        assert created_trailer["rearLoadingAvailable"] == trailer_payload["isRearLoadingAvailable"]
+        assert created_trailer["isTopLoadingAvailable"] == trailer_payload["isTopLoadingAvailable"]
+        assert created_trailer["isSideLoadingAvailable"] == trailer_payload["isSideLoadingAvailable"]
+        assert created_trailer["isRearLoadingAvailable"] == trailer_payload["isRearLoadingAvailable"]
 
     # выводим информацию о созданном прицепе
     plate = created_trailer["plateNumber"]

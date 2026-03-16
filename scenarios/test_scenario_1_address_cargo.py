@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import pytest
 from pages.address_page import AddressPage
 from pages.create_cargo_page import CargoPlaceClient

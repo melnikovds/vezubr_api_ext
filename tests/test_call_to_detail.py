@@ -2,7 +2,6 @@ import allure
 import pytest
 import requests
 import json
-
 from config.settings import BASE_URL
 
 # Список ID рейсов для проверки (можно расширить)

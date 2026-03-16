@@ -4,6 +4,7 @@ import pytest
 import requests
 from dotenv import load_dotenv
 from config.settings import BASE_URL, TIMEOUT
+from pages.create_contractor_page import CreateContractorPage
 
 dotenv_path = Path(__file__).parent / ".env"
 if dotenv_path.exists():
@@ -11,6 +12,16 @@ if dotenv_path.exists():
 
 # === КЭШ ДЛЯ ТОКЕНОВ ===
 _auth_cache = {}
+
+
+# === ROLE-RELATED FIXTURES ===
+@pytest.fixture(params=["lkp"])
+def role(request):
+    """
+    Фикстура для указания роли пользователя.
+    По умолчанию используем LKP (подрядчик), так как он нужен для большинства тестов.
+    """
+    return request.param
 
 
 @pytest.fixture(scope="session")
@@ -61,8 +72,8 @@ def _get_role_from_request(request):
     # 2. Если параметризация через valid_addresses[indirect=True]
     if hasattr(request, "param") and isinstance(request.param, str):
         return request.param
-    # 3. Fallback
-    return "lke"
+    # 3. Fallback - возвращаем 'lkp' как наиболее частый случай
+    return "lkp"
 
 
 # === ROLE-AWARE FIXTURES (ТОЛЬКО ОНИ!) ===
@@ -138,3 +149,34 @@ def lkp_token(get_auth_token):
     """Токен пользователя LKP (подрядчик)"""
     token_info = get_auth_token("lkp")
     return token_info["token"]
+
+
+@pytest.fixture
+def create_contractor_page():
+
+
+    def _create_page(base_url: str, token: str):
+        return CreateContractorPage(base_url, token)
+
+    return _create_page
+
+
+@pytest.fixture
+def contractor_page_lke(lke_token):
+
+    from config.settings import BASE_URL
+    return CreateContractorPage(BASE_URL, lke_token)
+
+
+@pytest.fixture
+def contractor_page_lkz(lkz_token):
+
+    from config.settings import BASE_URL
+    return CreateContractorPage(BASE_URL, lkz_token)
+
+
+@pytest.fixture
+def contractor_page_lkp(lkp_token):
+    """Фикстура для Page Object контрагента с токеном LKP"""
+    from config.settings import BASE_URL
+    return CreateContractorPage(BASE_URL, lkp_token)

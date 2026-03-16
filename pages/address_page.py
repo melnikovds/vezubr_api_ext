@@ -1,11 +1,12 @@
 import random
 import requests
 from datetime import datetime
+from typing import Optional, List, Dict
 
 
 class AddressPage:
     @staticmethod
-    def list_addresses(base_url: str, token: str, items_per_page: int = 100) -> list:
+    def list_addresses(base_url: str, token: str, items_per_page: int = 500) -> list:
         """Получить список всех адресов."""
         headers = {"Authorization": token}
         response = requests.post(
@@ -33,9 +34,15 @@ class AddressPage:
         )
         response.raise_for_status()
         return response.json().get("id", 0)
+
+    @staticmethod
     def create_address_payload(**overrides) -> dict:
-        # Генерация уникального externalId
-        external_id = f"Izhevsk {random.randint(1, 100)}-{random.randint(1, 1000)}"
+        """Создать payload для адреса."""
+        # Генерация уникального externalId если не указан
+        if "externalId" not in overrides:
+            external_id = f"Izhevsk {random.randint(1, 100)}-{random.randint(1, 1000)}"
+        else:
+            external_id = overrides["externalId"]
 
         # Генерация времени для title
         current_time = datetime.now().strftime("%H:%M:%S")
@@ -45,7 +52,7 @@ class AddressPage:
             "addressString": overrides.get("addressString", "Россия, г Ижевск, ул Дзержинского, д 61"),
             "title": overrides.get("title", default_title),
             "timezone": overrides.get("timezone", "Europe/Samara"),
-            "externalId": overrides.get("externalId", external_id),  # ← рандомный ID
+            "externalId": external_id,
             "status": overrides.get("status", True),
             "latitude": overrides.get("latitude", 56.883786581427415),
             "longitude": overrides.get("longitude", 53.24970983252293),
@@ -55,16 +62,12 @@ class AddressPage:
             "liftingCapacityMax": overrides.get("liftingCapacityMax", random.randint(2000, 5000)),
             "vicinityRadius": overrides.get("vicinityRadius", random.randint(2000, 40000)),
             "maxHeightFromGroundInCm": overrides.get("maxHeightFromGroundInCm", 300),
-            "comment": overrides.get("comment", "что то привезли/увезли"),
+            "comment": overrides.get("comment", "тестовый адрес"),
             "necessaryPass": overrides.get("necessaryPass", 0),
             "statusFlowType": overrides.get("statusFlowType", "fullFlow"),
             "cart": overrides.get("cart", 0),
             "elevator": overrides.get("elevator", 0),
             "isFavorite": overrides.get("isFavorite", 0),
-            "pointOwnerInn": None,
-            "pointOwnerKpp": None,
-            "pointArrivalDuration": None,
-            "pointDepartureDuration": None,
             "contacts": overrides.get("contacts", [{"contact": None, "email": None, "phone": None}]),
             "attachedFiles": overrides.get("attachedFiles", []),
             "averageOperationTime": overrides.get("averageOperationTime", [0]),

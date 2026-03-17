@@ -3,7 +3,6 @@ import os
 import allure
 import pytest
 import requests
-
 from pages.cargo_create_list_page import CargoPlaceListClient
 from config.settings import BASE_URL
 from utils.api_helpers import get_two_valid_addresses

@@ -11,7 +11,7 @@ from config.settings import BASE_URL
 
 # Конфигурация - РАЗНЫЕ АДРЕСА ДЛЯ КАЖДОЙ ВЫГРУЗКИ
 DEPARTURE_ID = 27282
-DELIVERY_IDS = [27287, 27288, 27125, 27374]  # 4 РАЗНЫХ адреса для выгрузки
+DELIVERY_IDS = [27287, 27288, 27125, 27374]  # 4 разных адреса для выгрузки
 ALL_ADDRESS_IDS = [DEPARTURE_ID] + DELIVERY_IDS
 CLIENT_ID = 1598
 PRODUCER_ID = 1939

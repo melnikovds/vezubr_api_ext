@@ -44,7 +44,7 @@ class CargoPlaceClient:
             "reverseCargoType": "other",
             "reverseCargoReason": "",
             "comment": comment,
-            "status": "new",
+            # "status": "new",  - было изменено в задаче vz-10443 (оставили для правок)
             "departureAddressExternalId": departure_external_id,
             "deliveryAddressExternalId": delivery_external_id,
             "invoiceNumber": invoice_number

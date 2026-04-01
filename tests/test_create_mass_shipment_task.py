@@ -2,6 +2,7 @@ import allure
 import pytest
 import requests
 import time
+from pprint import pprint
 from config.settings import BASE_URL
 from pages.mass_shipment_task_page import *
 
@@ -22,7 +23,7 @@ def test_create_list_tasks(role, get_auth_token):
     tasks_data = [generate_random_task_item() for _ in range(count)]
 
     payload = {"data": tasks_data}
-    # print(payload)
+    # pprint(payload)
     created_id = [] # список для хранения созданных заданий
 
     with allure.step(f"Массовое создание {count} Заданий"):
